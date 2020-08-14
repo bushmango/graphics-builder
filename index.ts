@@ -17,6 +17,9 @@ const program: any = require("commander");
 const exec: any = require("child_process").exec;
 const path: any = require("path");
 
+var argv = require("minimist")(process.argv.slice(2));
+console.log(argv);
+
 console.log(chalk.bold.cyan("-.-"));
 console.log(chalk.bold.green("~Stevie Bushman Presents~"));
 console.log(
@@ -28,14 +31,13 @@ process.argv.forEach((val, index, array) => {
   console.log(index + ": " + val);
 });
 
-let dir = process.argv[2] || "ludumDareStart";
-process.title = "Gfx:" + dir;
+// let dir = process.argv[2] || "ludumDareStart";
+// process.title = "Gfx:" + dir;
 
-let basePath = __dirname;
+let basePath = argv.src || path.join(__dirname, "../");
 console.log("__dirname", __dirname);
-basePath = path.join(basePath, "../");
 console.log("basePath", basePath);
-console.log("dir", dir);
+// console.log("dir", dir);
 
 let watchPath = basePath;
 let outPath = basePath;
@@ -62,11 +64,12 @@ let texturePackerPath =
 
 function run() {
   // TODO: command line args
-  program
-    .arguments("<file>")
-    .option("-n, --narm <narm>", "Your name")
-    .action((file, options) => {})
-    .parse(process.argv);
+  // program
+  //   .arguments("<file>")
+  //   .option("-n, --narm <narm>", "Your name")
+  //   .option("-s, --src <dir>", "dir")
+  //   .action((file, options) => {})
+  //   .parse(process.argv);
 
   // Stuff that is always done
   let glob = watchGlob;
@@ -77,7 +80,7 @@ function run() {
 function watch(glob: string) {
   // Initialize watcher.
   let watcher = chokidar.watch(glob, {
-    persistent: true
+    persistent: true,
   });
 
   // Something to use when events are received.
@@ -85,8 +88,8 @@ function watch(glob: string) {
 
   // Add event listeners.
   watcher
-    .on("add", loc => onWatchEvent(loc, "added"))
-    .on("change", loc => onWatchEvent(loc, "changed"));
+    .on("add", (loc) => onWatchEvent(loc, "added"))
+    .on("change", (loc) => onWatchEvent(loc, "changed"));
 }
 
 function onWatchEvent(loc: string, type) {
@@ -137,7 +140,7 @@ function onWatchEvent(loc: string, type) {
 
 const _throttled_runPacker = _.throttle(runPacker, 1000, {
   leading: false,
-  trailing: true
+  trailing: true,
 });
 
 function runPacker() {
@@ -146,8 +149,9 @@ function runPacker() {
 }
 function _pack(inPath, outPath, outJson, outPng) {
   let scale = 1;
-  let args = `--data ${outPath + outJson} --format json --sheet ${outPath +
-    outPng} --force-squared --scale ${scale} --scale-mode fast --width 512 --height 512 --border-padding 2 --shape-padding 2 --padding 2 --trim-mode Trim --trim-sprite-names --disable-rotation ${inPath}`;
+  let args = `--data ${outPath + outJson} --format json --sheet ${
+    outPath + outPng
+  } --force-squared --scale ${scale} --scale-mode fast --width 512 --height 512 --border-padding 2 --shape-padding 2 --padding 2 --trim-mode Trim --trim-sprite-names --disable-rotation ${inPath}`;
 
   let cmd = texturePackerPath + " " + args;
   console.log("exe", cmd);

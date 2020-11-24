@@ -34,6 +34,9 @@ process.argv.forEach((val, index, array) => {
 // let dir = process.argv[2] || "ludumDareStart";
 // process.title = "Gfx:" + dir;
 
+let updir = argv.updir !== undefined;
+console.log("updir|" + updir);
+
 let basePath = argv.src || path.join(__dirname, "../");
 console.log("__dirname", __dirname);
 console.log("basePath", basePath);
@@ -108,7 +111,13 @@ function onWatchEvent(loc: string, type) {
   // console.log('dir', dir)
 
   let fileName = path.basename(originalFilePathWithoutExtension);
-  let filePath = path.join(outPath, dir + fileName) + ".png";
+
+  let subdir = "";
+  if (updir) {
+    subdir = "x/";
+  }
+
+  let filePath = path.join(outPath, dir + subdir + fileName) + ".png";
   if (dir) {
     fileName = dir + fileName;
     // filePath = dir + '\\' + filePath
